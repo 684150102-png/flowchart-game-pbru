@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flowchart Adventure: ผจญภัยท่องโลกผังงาน</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;font-family:'Kanit',system-ui,sans-serif;user-select:none}
+body{margin:0;font-size:20px;color:#2d2a4a;min-height:100vh;background:linear-gradient(#aee6ff,#fff2c2 70%,#ffd6ec)}
+button{cursor:pointer;font-size:20px;font-weight:800;border:4px solid #2d2a4a;border-radius:18px;padding:10px 18px;box-shadow:0 5px 0 #2d2a4a;transition:transform .1s}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #2d2a4a}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:14px 22px;background:#fff;border-bottom:6px solid #2d2a4a}
+h1{margin:0;font-size:34px;color:#7c4dff}h1 small{display:block;font-size:18px;color:#ff5c93;font-weight:600}
+.tabs,.acts{display:flex;flex-wrap:wrap;gap:10px}
+.tab{background:#fff}.tab.act{background:#ffd84d;transform:scale(1.06)}
+.wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+.card{background:#fff;border:5px solid #2d2a4a;border-radius:30px;box-shadow:0 8px 0 #2d2a4a44;padding:18px}
+.card h2{margin:0 0 10px;font-size:26px}
+.pal{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:center}
+.b-t{background:#4cd9a0}.b-p{background:#5cb4ff}.b-d{background:#ffb347}.b-c{background:#c58bff}.b-go{background:#ff6fa5;font-size:24px}.b-r{background:#ffe7a3}
+#fc{background:#f3f0ff;border:4px dashed #b9a7ff;border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;max-height:62vh;min-height:340px;overflow-y:auto}
+.nw{position:relative;display:flex;flex-direction:column;align-items:center}
+.nd{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;color:#fff;border:4px solid #2d2a4a;transition:.2s;text-align:center;font-size:22px}
+.nd.t{background:#2fbf7f;border-radius:99px;padding:12px 34px}
+.nd.p{background:#3f9bff;border-radius:6px;padding:12px 18px}
+.nd.p input{font-size:22px;font-weight:800;width:290px;background:#ffffff33;color:#fff;border:3px solid #fff;border-radius:12px;padding:6px 10px;text-align:center;user-select:text}
+.dw{width:290px;height:160px;position:relative;filter:drop-shadow(0 0 0 #2d2a4a)}
+.dw .nd{width:100%;height:100%;background:#ff9f1c;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border:0;padding:0 60px;font-size:20px;line-height:1.2}
+.nd.c{background:#a259ff;border-radius:50%;width:70px;height:70px;font-size:30px}
+.x{position:absolute;right:-12px;top:-12px;width:42px;height:42px;padding:0;border-radius:50%;background:#ff5c5c;color:#fff;font-size:20px;box-shadow:0 3px 0 #2d2a4a}
+.dw .x{right:30px;top:6px}
+.on>.nd,.on .dw .nd,.nw.on .nd{box-shadow:0 0 0 6px #ffe14d,0 0 30px 10px #ffe14d;transform:scale(1.08)}
+.ar{font-size:30px;color:#8b7bd8;line-height:1;margin:4px 0}
+.lvl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:12px}
+.badge{background:#7c4dff;color:#fff;border-radius:14px;padding:4px 14px;font-weight:800}
+#st{font-weight:800;border-radius:99px;padding:4px 16px;border:3px solid #2d2a4a;background:#b9f5d8}
+#st.run{background:#ffe27a}#st.bad{background:#ffb3b3}
+#scene{position:relative;border:5px solid #2d2a4a;border-radius:26px;min-height:380px;padding:30px 12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.dc{position:absolute;font-size:46px;animation:fl 3s ease-in-out infinite alternate;pointer-events:none;opacity:.95}
+@keyframes fl{to{transform:translateY(-12px) rotate(8deg)}}
+#board{position:relative;display:grid;gap:var(--gap);z-index:2;padding:12px;background:#ffffffaa;border-radius:24px;border:4px solid #fff}
+.tl{width:var(--cell);height:var(--cell);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:calc(var(--cell)*.6);position:relative;border:3px solid #ffffff99}
+.tl i{position:absolute;top:2px;left:4px;font-size:15px;font-style:normal;font-weight:800;background:#fff;border-radius:8px;padding:0 6px}
+.it{animation:fl 1.2s ease-in-out infinite alternate}
+#pl{position:absolute;left:12px;top:12px;width:var(--cell);height:var(--cell);z-index:5;display:flex;align-items:center;justify-content:center;transition:transform .4s cubic-bezier(.3,1.4,.6,1);transform:translate(calc(var(--x)*(var(--cell) + var(--gap))),calc(var(--y)*(var(--cell) + var(--gap))))}
+#pl b{font-size:calc(var(--cell)*.8);font-weight:400;filter:drop-shadow(0 6px 0 #0003)}
+#pl.go b{animation:hop .35s infinite alternate}
+@keyframes hop{to{transform:translateY(-12px) rotate(6deg)}}
+#pl em{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:calc(var(--cell)*.35);background:#fff;border:3px solid #2d2a4a;border-radius:50%;width:calc(var(--cell)*.42);height:calc(var(--cell)*.42);display:flex;align-items:center;justify-content:center}
+.tip{display:flex;gap:14px;align-items:center;margin-top:14px;background:#fff6c9;border:4px solid #ffb800;border-radius:22px;padding:14px}
+.tip .bot{font-size:56px}.tip h3{margin:0;font-size:22px}.tip p{margin:4px 0 0;font-size:19px;line-height:1.4}
+.ov{position:fixed;inset:0;background:#2d2a4acc;display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.ov.show{display:flex}
+.md{background:#fff;border:6px solid #2d2a4a;border-radius:32px;max-width:560px;width:100%;padding:24px;text-align:center;max-height:92vh;overflow:auto}
+.md h3{margin:6px 0;font-size:32px}.md p{font-size:21px}.big{font-size:80px}
+.gi{display:flex;gap:14px;align-items:center;text-align:left;margin:10px 0;padding:10px;border-radius:18px;background:#f3f0ff}
+.gi .nd{flex:none;width:130px;height:64px;font-size:17px;padding:4px}.gi .nd.t{border-radius:99px}.gi .nd.d{background:#ff9f1c;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);border:0}.gi .nd.c{width:64px}
+#warn{display:none;margin-bottom:10px;background:#ffd6d6;border:4px solid #ff5c5c;border-radius:18px;padding:10px 14px;font-weight:800;font-size:19px;line-height:1.4}
+#warn.show{display:block}
+.nw.bad .nd{box-shadow:0 0 0 6px #ff5c5c,0 0 26px 8px #ff5c5c}
+.md.wide{max-width:680px;text-align:left}.md.wide h3,.md.wide .big{text-align:center}
+.md h4{margin:16px 0 6px;font-size:24px;color:#7c4dff}
+.md ol,.md ul{margin:4px 0;padding-left:26px;font-size:19px;line-height:1.55}
+.md .sm{font-size:18px;margin:6px 0}
+.dk{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dk div{background:#f3f0ff;border-radius:14px;padding:8px 12px;font-size:19px;line-height:1.4}
+code{background:#ffe7a3;border-radius:8px;padding:1px 8px;font-weight:800}
+.pal2{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
+.pt,.ch{cursor:grab;display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:15px;padding:6px 8px;border:3px dashed #b9a7ff;border-radius:14px;background:#fff}
+.ch{flex-direction:row;font-size:20px;padding:4px 14px;border:3px solid #2d2a4a;background:#ffe7a3;box-shadow:0 4px 0 #2d2a4a}
+.ch.n{padding:4px 12px;background:#d9ecff}
+.sh{width:70px;height:38px}
+.sh-t{background:#2fbf7f;border-radius:99px}
+.sh-io{background:#ff6fa5;clip-path:polygon(18% 0,100% 0,82% 100%,0 100%)}
+.sh-p{background:#3f9bff;border-radius:4px}
+.sh-d{background:#ff9f1c;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.sh-c{background:#a259ff;border-radius:50%;width:38px}
+.sh-doc{background:#5fd0d0;clip-path:polygon(0 0,100% 0,100% 82%,75% 92%,50% 82%,25% 72%,0 82%)}
+.nd.io{background:#ff6fa5;clip-path:polygon(12% 0,100% 0,88% 100%,0 100%);border:0;padding:14px 46px}
+.nd.doc{background:#5fd0d0;clip-path:polygon(0 0,100% 0,100% 82%,75% 92%,50% 82%,25% 72%,0 82%);border:0;padding:14px 36px 26px}
+.nd.lp{background:#f5b700;color:#2d2a4a;clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);border:0;padding:14px 50px}
+.sh-lp{background:#f5b700;clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.gi .nd.io,.gi .nd.doc,.gi .nd.lp{padding:4px}
+.slot{min-width:84px;padding:4px 12px;border-radius:10px;background:#ffffff40;border:3px dashed #fff;display:inline-flex;gap:3px;justify-content:center}
+.slot.empty{opacity:.7}
+.dg{background:#fff;color:#2d2a4a;border-radius:8px;padding:0 8px;cursor:pointer}
+.nw.sel .nd.p{outline:5px dashed #ffe14d;outline-offset:3px}
+.cf{position:fixed;top:-60px;font-size:36px;z-index:99;pointer-events:none;animation:fall 2.2s linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧭 Flowchart Adventure<small>ผจญภัยท่องโลกผังงาน • สื่อการเรียนรู้ ม.1</small></h1>
+  <div class="tabs">
+    <button class="tab" onclick="sw(1)">🐶 ด่าน 1 ลำดับ</button>
+    <button class="tab" onclick="sw(2)">🤠 ด่าน 2 เงื่อนไข</button>
+    <button class="tab" onclick="sw(3)">👸 ด่าน 3 วนซ้ำ</button>
+  </div>
+  <div class="acts">
+    <button class="b-p" onclick="show('guide')">📖 คู่มือการเล่นเกม</button>
+    <button class="b-r" onclick="sw(cur)">🔄 เริ่มใหม่</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h2>✏️ กระดานต่อผังงาน</h2>
+    <div class="pal2"><b>รูปร่าง:</b><div class="pt" draggable="true" data-type="terminal" onclick="add('terminal')"><div class="sh sh-t"></div>เริ่มต้น/จบ</div><div class="pt" draggable="true" data-type="io" onclick="add('io')"><div class="sh sh-io"></div>รับ/แสดงข้อมูล</div><div class="pt" draggable="true" data-type="process" onclick="add('process')"><div class="sh sh-p"></div>คำสั่ง</div><div class="pt" draggable="true" data-type="decision" onclick="add('decision')"><div class="sh sh-d"></div>ตัดสินใจ</div><div class="pt" draggable="true" data-type="connector" onclick="add('connector')"><div class="sh sh-c"></div>จุดเชื่อม</div><div class="pt" draggable="true" data-type="loop" onclick="add('loop')"><div class="sh sh-lp">🔁</div>วนซ้ำ</div><div class="pt" draggable="true" data-type="document" onclick="add('document')"><div class="sh sh-doc"></div>เอกสาร</div></div>
+<div class="pal2"><b>ทิศทาง:</b><div class="ch" draggable="true" data-chip="dir" data-v="ซ้าย" onclick="chipClick(this)">ซ้าย</div><div class="ch" draggable="true" data-chip="dir" data-v="ขวา" onclick="chipClick(this)">ขวา</div><div class="ch" draggable="true" data-chip="dir" data-v="ขึ้น" onclick="chipClick(this)">ขึ้น</div><div class="ch" draggable="true" data-chip="dir" data-v="ลง" onclick="chipClick(this)">ลง</div><div class="ch" draggable="true" data-chip="dir" data-v="ไขประตู" onclick="chipClick(this)">ไขประตู</div></div>
+<div class="pal2"><b>ตัวเลข:</b><div class="ch n" draggable="true" data-chip="num" data-v="0" onclick="chipClick(this)">0</div><div class="ch n" draggable="true" data-chip="num" data-v="1" onclick="chipClick(this)">1</div><div class="ch n" draggable="true" data-chip="num" data-v="2" onclick="chipClick(this)">2</div><div class="ch n" draggable="true" data-chip="num" data-v="3" onclick="chipClick(this)">3</div><div class="ch n" draggable="true" data-chip="num" data-v="4" onclick="chipClick(this)">4</div><div class="ch n" draggable="true" data-chip="num" data-v="5" onclick="chipClick(this)">5</div><div class="ch n" draggable="true" data-chip="num" data-v="6" onclick="chipClick(this)">6</div><div class="ch n" draggable="true" data-chip="num" data-v="7" onclick="chipClick(this)">7</div><div class="ch n" draggable="true" data-chip="num" data-v="8" onclick="chipClick(this)">8</div><div class="ch n" draggable="true" data-chip="num" data-v="9" onclick="chipClick(this)">9</div></div>
+    <div id="fc"></div>
+    <div class="pal" style="margin:14px 0 0;justify-content:space-between">
+      <label><input type="checkbox" id="live" checked style="width:24px;height:24px;vertical-align:middle"> รันสดทันที</label>
+      <span>
+        <button class="b-r" onclick="clr()">🗑️ ล้าง</button>
+        <button class="b-go" onclick="execute(true)">▶️ ทดสอบรัน</button>
+      </span>
+    </div>
+    <div style="font-size:18px;margin-top:8px">💡 ลากรูปร่างมาวางในกรอบ แล้วลากบล็อกทิศทางกับตัวเลขไปใส่ในสี่เหลี่ยมคำสั่ง (ตัวละครจะเดินตอนใส่ตัวเลข) ใส่ผิดให้ลากอันใหม่มาวางทับ หรือแตะเลขเพื่อลบ (มือถือ: แตะกล่องคำสั่งก่อน แล้วแตะบล็อก)</div>
+  </section>
+
+  <section class="card">
+    <div class="lvl">
+      <span class="badge" id="bd"></span>
+      <h2 id="tt" style="margin:0"></h2>
+      <span id="st">พร้อมใช้งาน</span>
+    </div>
+    <div id="ds" style="font-size:20px;margin-bottom:10px"></div>
+    <div id="warn"></div>
+    <div id="scene"><div id="board"><div id="pl"><b></b><em></em></div></div></div>
+    <div class="tip"><div class="bot">🦉</div><div><h3 id="ct"></h3><p id="cd"></p></div></div>
+  </section>
+</div>
+
+<div class="ov" id="guide" onclick="if(event.target===this)hide('guide')"><div class="md wide">
+  <div class="big">📖</div><h3>คู่มือการเล่นเกม</h3>
+  <h4>🎯 กติกาการเล่น</h4>
+  <ol>
+    <li>ต่อผังงานทางซ้าย เพื่อพาตัวละครไปถึงเป้าหมาย (🏠 💎 🤴)</li>
+    <li>ผังงานทำงานจากบนลงล่างทีละกล่อง เริ่มที่ "เริ่มต้น" และจบที่ "จบ"</li>
+    <li>ลากรูปร่างจากชุดเครื่องมือมาวางในกรอบผังงาน แล้วลากบล็อก <b>ทิศทาง</b> และ <b>ตัวเลข</b> ไปใส่ในสี่เหลี่ยมคำสั่ง ใส่เลขได้ <b>กี่ก้าวก็ได้ ไม่จำกัด</b> (ลาก 1 แล้วลาก 2 = 12) ตัวละครจะเดินตอนที่ใส่ <b>ตัวเลข</b> แล้ว ลากทิศทางอย่างเดียวยังไม่เดิน</li>
+    <li>ใส่ผิดให้ลากบล็อกใหม่มาวางทับ หรือแตะที่ตัวเลขเพื่อลบ</li>
+    <li>ห้ามเดินออกนอกกระดาน และห้ามชนสิ่งกีดขวาง (🌳 🌵 🔮) ถ้าเดินผิดทาง เกมจะหยุดและเตือนว่าผิดตรงไหน</li>
+    <li>ติ๊ก "รันสดทันที" ไว้ ตัวละครจะเดินต่อจากจุดเดิมทุกครั้งที่ใส่ตัวเลขหรือวางรูปร่างใหม่ หรือกด ▶️ ทดสอบรัน เพื่อเริ่มเดินใหม่ตั้งแต่จุดเริ่มต้น</li>
+  </ol>
+  <h4>🕹️ บล็อกคำสั่งเคลื่อนที่</h4>
+  <div class="dk">
+    <div><code>ขึ้น</code> + <code>3</code><br>เดินขึ้นไปด้านบน 3 ก้าว</div>
+    <div><code>ลง</code> + <code>3</code><br>เดินลงไปด้านล่าง 3 ก้าว</div>
+    <div><code>ซ้าย</code> + <code>3</code><br>เดินไปทางซ้าย 3 ก้าว</div>
+    <div><code>ขวา</code> + <code>3</code><br>เดินไปทางขวา 3 ก้าว</div>
+  </div>
+  <p class="sm">ถ้าไม่ใส่ตัวเลข จะเดิน 1 ก้าว</p>
+  <p class="sm">🔑 <code>ไขประตู</code> ใช้ไขประตู 🚪 ได้เมื่อเก็บลูกกุญแจแล้ว (เดินผ่านช่อง 🔑 เพื่อเก็บ)</p>
+  <h4>🔶 สัญลักษณ์ผังงาน</h4>
+  <div class="gi"><div class="nd t">เริ่มต้น/จบ</div><div><b>Terminal</b><br>จุดเริ่มต้นและจุดสิ้นสุด</div></div>
+  <div class="gi"><div class="nd io">รับ/แสดง</div><div><b>Input/Output</b><br>รับข้อมูลและแสดงผล (วางประกอบได้ ไม่มีผลต่อการเดิน)</div></div>
+  <div class="gi"><div class="nd p">คำสั่ง</div><div><b>Process</b><br>การปฏิบัติงาน เช่น ขวา 3 ก้าว</div></div>
+  <div class="gi"><div class="nd d">ตัดสินใจ</div><div><b>Decision</b><br>ตรวจเงื่อนไข ถ้า "ใช่" ทำคำสั่งถัดไป ถ้า "ไม่ใช่" ข้ามคำสั่งถัดไป (ด่าน 3: ถ้ายังไม่ถึง ให้วนกลับไปที่เครื่องหมายวนซ้ำ 🔁)</div></div>
+  <div class="gi"><div class="nd c">•</div><div><b>Connector</b><br>จุดเชื่อมต่อผังงาน (ใช้เป็นจุดวนกลับในด่าน 3 แทนเครื่องหมายวนซ้ำได้เหมือนกัน)</div></div>
+  <div class="gi"><div class="nd lp">🔁 วนซ้ำ</div><div><b>Loop (วนซ้ำ)</b><br>เครื่องหมายเริ่มต้นการวนซ้ำ ใช้ในด่าน 3 ข้าวหลามตัดจะวนกลับมาที่นี่ จนกว่าจะถึงเป้าหมาย</div></div>
+  <div class="gi"><div class="nd" style="background:none;border:0;color:#8b7bd8;font-size:34px">▼</div><div><b>Flow Line</b><br>ลูกศรแสดงทิศทางการไหล (ขึ้นให้เองอัตโนมัติ)</div></div>
+  <div class="gi"><div class="nd doc">เอกสาร</div><div><b>Document</b><br>แสดงเอกสาร (วางประกอบได้ ไม่มีผลต่อการเดิน)</div></div>
+  <h4>⚠️ คำเตือนที่อาจเจอ</h4>
+  <ul>
+    <li>เดินเกินขอบกระดาน</li>
+    <li>ชนสิ่งกีดขวาง</li>
+    <li>ประตูยังล็อก หรือยังไม่มีกุญแจ</li>
+    <li>กล่องคำสั่งยังว่าง (ยังไม่ได้ลากทิศทางมาใส่)</li>
+  </ul>
+  <div style="text-align:center;margin-top:12px"><button class="b-go" onclick="hide('guide')">เข้าใจแล้ว! 🚀</button></div>
+</div></div>
+<div class="ov" id="ok"><div class="md"><div class="big">🏆</div><h3>ภารกิจสำเร็จ! 🎉</h3><p>เก่งมาก! ผังงานของคุณพาตัวละครถึงจุดหมายแล้ว</p><div class="big" style="font-size:50px">⭐⭐⭐</div>
+  <button class="b-r" onclick="hide('ok');sw(cur)">เล่นอีกครั้ง</button> <button class="b-go" onclick="hide('ok');sw(cur%3+1)">ด่านถัดไป ➡️</button></div></div>
+<div class="ov" id="no"><div class="md"><div class="big">🤔</div><h3>ยังไม่ถึงเป้าหมาย</h3><p>ลองตรวจลำดับคำสั่งในผังงาน แล้วแก้ไขอีกครั้งนะ</p><button class="b-go" onclick="hide('no')">🔧 ปรับแก้ผังงาน</button></div></div>
+
+<script>
+const LV={
+1:{name:'น้องหมาหาทางกลับบ้าน',badge:'ด่านที่ 1',desc:"พา 'น้องหมา' 🐶 เดินข้ามสวนหลบต้นไม้ไปที่บ้านหมา 🏠",ct:'โครงสร้างแบบลำดับ (Sequence)',cd:'ผังงานทำคำสั่งเรียงจากบนลงล่างทีละขั้นตอน',
+ cols:4,rows:4,start:{x:0,y:0,dir:0},goal:{x:3,y:3},obs:[{x:1,y:0},{x:2,y:2}],ob:'🌳',av:'🐶',gi:'🏠',
+ bg:'linear-gradient(#8fe3ff,#b6f58f)',ta:'#c8f7a8',tb:'#a6ec86',deco:[['☁️',4,6],['🌈',60,4],['🦋',80,60],['🌼',6,78],['🐝',40,84]],
+ nodes:[['terminal','เริ่มต้น'],['process','ลง 3 ก้าว'],['process','ขวา 3 ก้าว'],['terminal','จบ']]},
+2:{name:'นักสำรวจกับขุมทรัพย์ปริศนา',badge:'ด่านที่ 2',desc:"พา 'นักสำรวจ' 🤠 เก็บกุญแจ 🔑 แล้วไขประตู 🚪 ไปเก็บขุมทรัพย์ 💎",ct:'โครงสร้างแบบเลือกทำ (Decision)',cd:'ข้าวหลามตัดตรวจเงื่อนไข ถ้ามีกุญแจก็ไขประตูได้',
+ cols:5,rows:4,start:{x:0,y:0,dir:0},goal:{x:4,y:0},door:{x:2,y:0},key:{x:0,y:2},obs:[{x:2,y:1},{x:2,y:3}],ob:'🌵',av:'🤠',gi:'💎',
+ bg:'linear-gradient(#ffe29a,#ffa95c)',ta:'#ffe7b0',tb:'#ffd286',deco:[['☀️',4,4],['🐪',70,6],['🦂',8,80],['🏜️',74,78]],
+ nodes:[['terminal','เริ่มต้น'],['process','ลง 2 ก้าว (เก็บกุญแจ)'],['process','ขึ้น 2 ก้าว'],['decision','มีลูกกุญแจหรือไม่?','hasKey'],['process','ไขประตู'],['process','ขวา 4 ก้าว'],['terminal','จบ']]},
+3:{name:'เจ้าหญิงฝ่าม่านเวทมนตร์',badge:'ด่านที่ 3',desc:"พา 'เจ้าหญิง' 👸 เดินซ้ำๆ จนกว่าจะถึง 'เจ้าชาย' 🤴",ct:'โครงสร้างแบบวนซ้ำ (Loop)',cd:'วางเครื่องหมายวนซ้ำ 🔁 ไว้หน้าคำสั่ง แล้วใช้เงื่อนไขย้อนกลับมาที่นั่น เพื่อทำคำสั่งเดิมซ้ำโดยไม่ต้องวางบล็อกเพิ่ม',
+ cols:6,rows:3,start:{x:0,y:1,dir:0},goal:{x:5,y:1},obs:[{x:1,y:0},{x:3,y:2}],ob:'🔮',av:'👸',gi:'🤴',
+ bg:'linear-gradient(#ffb8ea,#b79bff)',ta:'#ffe0f6',tb:'#f1c9ff',deco:[['🏰',70,4],['✨',6,6],['🦄',6,78],['⭐',50,86],['🌙',44,3]],
+ nodes:[['terminal','เริ่มต้น'],['loop','วนซ้ำ'],['process','ขวา 1 ก้าว'],['decision','ถึงตัวเจ้าชายหรือยัง?','reachPrince'],['terminal','จบ']]}
+};
+const ARW=['➡️','⬇️','⬅️','⬆️'];
+let cur=1,nodes=[],P={},running=false,run=0,sel=null,uid=0;
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const show=id=>$(id).classList.add('show'),hide=id=>$(id).classList.remove('show');
+
+function sw(n){
+  cur=n;const L=LV[n];run++;running=false;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('act',i+1===n));
+  $('bd').textContent=L.badge;$('tt').textContent=L.name;$('ds').textContent=L.desc;$('ct').textContent=L.ct;$('cd').textContent=L.cd;
+  sel=null;nodes=L.nodes.map((a,i)=>{const o={id:'n'+i,type:a[0],text:a[1],condition:a[0]==='decision'?a[2]:undefined};
+    if(a[0]==='process'){const m=a[1].match(/(ขวา|ซ้าย|ขึ้น|ลง|ไขประตู)\s*(\d+)?/);o.dir=m[1];o.num=m[2]||''}return o});
+  warn('');buildBoard();resetP();drawP();drawFC();
+  if($('live').checked)setTimeout(()=>execute(false),400);
+}
+function resetP(){const s=LV[cur].start;P={x:s.x,y:s.y,dir:s.dir,key:false,door:false};status('พร้อมใช้งาน','')}
+function status(t,c){const s=$('st');s.textContent=t;s.className=c}
+
+function buildBoard(){
+  const L=LV[cur],b=$('board'),sc=$('scene'),gap=8;
+  const cell=Math.max(44,Math.min(92,Math.floor((sc.clientWidth-90-(L.cols-1)*gap)/L.cols)));
+  sc.style.background=L.bg;
+  b.style.setProperty('--cell',cell+'px');b.style.setProperty('--gap',gap+'px');
+  b.style.gridTemplateColumns=`repeat(${L.cols},var(--cell))`;
+  const pl=$('pl');b.innerHTML='';b.appendChild(pl);
+  sc.querySelectorAll('.dc').forEach(e=>e.remove());
+  L.deco.forEach(d=>{const e=document.createElement('div');e.className='dc';e.textContent=d[0];e.style.left=d[1]+'%';e.style.top=d[2]+'%';sc.appendChild(e)});
+  for(let r=0;r<L.rows;r++)for(let c=0;c<L.cols;c++){
+    const t=document.createElement('div');t.className='tl';t.id=`t${c}_${r}`;
+    t.style.background=(r+c)%2?L.tb:L.ta;
+    let h='';
+    if(c===L.start.x&&r===L.start.y)h+='<i>เริ่ม</i>';
+    if(L.obs.some(o=>o.x===c&&o.y===r))h+=`<span>${L.ob}</span>`;
+    if(L.door&&c===L.door.x&&r===L.door.y)h+='<span class="it" id="door">🚪</span>';
+    if(L.key&&c===L.key.x&&r===L.key.y)h+='<span class="it" id="key">🔑</span>';
+    if(c===L.goal.x&&r===L.goal.y){h+=`<span class="it">${L.gi}</span>`;t.style.background='#fff2a8'}
+    t.innerHTML=h;b.appendChild(t);
+  }
+}
+function drawP(){
+  const L=LV[cur],pl=$('pl');
+  pl.style.setProperty('--x',P.x);pl.style.setProperty('--y',P.y);
+  pl.className=running?'go':'';
+  const b=pl.querySelector('b');b.textContent=L.av;b.style.transform=P.dir===2?'scaleX(-1)':'';
+  pl.querySelector('em').textContent=ARW[P.dir];
+  const k=$('key');if(k)k.style.display=P.key?'none':'';
+  const d=$('door');if(d)d.textContent=P.door?'🔓':'🚪';
+}
+
+function drawFC(){
+  const c=$('fc');c.innerHTML='';
+  nodes.forEach((n,i)=>{
+    const w=document.createElement('div');w.className='nw'+(sel===n.id?' sel':'');w.id='n-'+n.id;
+    const edge=n.type==='terminal'&&(i===0||i===nodes.length-1);
+    const x=edge?'':`<button class="x" onclick="event.stopPropagation();del('${n.id}')">✖</button>`;
+    let h;
+    if(n.type==='terminal')h=`<div class="nd t">${n.text}</div>`;
+    else if(n.type==='process'){
+      const dg=(n.num||'').split('').map((d,k)=>`<span class="dg" onclick="event.stopPropagation();rmDg('${n.id}',${k})">${d}</span>`).join('');
+      h=`<div class="nd p" onclick="sel='${n.id}';drawFC()"><span class="slot${n.dir?'':' empty'}">${n.dir||'ทิศทาง'}</span>`+(n.dir==='ไขประตู'?'':`<span class="slot${dg?'':' empty'}">${dg||'ตัวเลข'}</span><span>ก้าว</span>`)+'</div>';
+    }
+    else if(n.type==='decision')h=`<div class="dw"><div class="nd d">${n.text}</div>${x}</div>`;
+    else if(n.type==='io')h=`<div class="nd io">${n.text}</div>`;
+    else if(n.type==='document')h=`<div class="nd doc">${n.text}</div>`;
+    else if(n.type==='loop')h=`<div class="nd lp">🔁 ${n.text}</div>`;
+    else h=`<div class="nd c">•</div>`;
+    w.innerHTML=h+(n.type==='decision'?'':x);
+    if(i<nodes.length-1)w.insertAdjacentHTML('beforeend','<div class="ar">▼</div>');
+    c.appendChild(w);
+  });
+}
+function changed(from){drawFC();if($('live').checked)execute(false,from||0)}
+function add(type,at){
+  const n={id:'n_'+(++uid),type};
+  if(type==='process'){n.dir='';n.num=''}
+  else if(type==='decision'){n.condition=cur===3?'reachPrince':'hasKey';n.text=cur===3?'ถึงตัวเจ้าชายหรือยัง?':'มีลูกกุญแจหรือไม่?'}
+  else if(type==='connector')n.text='จุดเชื่อมต่อ';
+  else if(type==='loop')n.text='วนซ้ำ';
+  else if(type==='io')n.text='รับ/แสดงข้อมูล';
+  else if(type==='document')n.text='เอกสาร';
+  else n.text='จบ';
+  const last=nodes[nodes.length-1],max=last&&last.type==='terminal'?nodes.length-1:nodes.length;
+  const idx=Math.max(1,Math.min(at===undefined?max:at,max));
+  nodes.splice(idx,0,n);
+  if(type==='process'){sel=n.id;drawFC()}
+  else changed(idx);
+}
+function fill(id,chip,v,i){
+  const n=nodes.find(a=>a.id===id);if(!n||n.type!=='process')return;
+  if(chip==='dir'){n.dir=v;if(v==='ไขประตู')n.num=''}
+  else{
+    if(n.dir==='ไขประตู')return;
+    n.num=String(n.num||'');
+    if(i!==undefined&&i!=='')n.num=n.num.slice(0,+i)+v+n.num.slice(+i+1);
+    else if(n.num.length<4)n.num+=v;
+  }
+  const ready=n.dir==='ไขประตู'||(n.dir&&n.num);
+  if(ready)changed(nodes.indexOf(n));else drawFC();
+}
+function rmDg(id,k){const n=nodes.find(a=>a.id===id);if(!n)return;n.num=n.num.slice(0,k)+n.num.slice(k+1);changed(nodes.indexOf(n))}
+function chipClick(el){if(!sel||!nodes.some(n=>n.id===sel)){warn('แตะกล่องสี่เหลี่ยมคำสั่งในผังงานก่อน หรือลากบล็อกไปวางที่กล่องนั้น');return}fill(sel,el.dataset.chip,el.dataset.v)}
+let drag=null;
+document.addEventListener('dragstart',e=>{const t=e.target.closest&&e.target.closest('[data-type],[data-chip]');if(!t)return;drag={type:t.dataset.type,chip:t.dataset.chip,v:t.dataset.v};e.dataTransfer.setData('text/plain','x');e.dataTransfer.effectAllowed='copy'});
+document.addEventListener('dragover',e=>{if(drag&&e.target.closest&&e.target.closest('#fc'))e.preventDefault()});
+document.addEventListener('drop',e=>{
+  if(!drag||!e.target.closest||!e.target.closest('#fc'))return;
+  e.preventDefault();const d=drag;drag=null;
+  if(d.type){
+    let i=nodes.length;const ws=[...document.querySelectorAll('#fc .nw')];
+    for(let k=0;k<ws.length;k++){const r=ws[k].getBoundingClientRect();if(e.clientY<r.top+r.height/2){i=k;break}}
+    add(d.type,i);
+  }else{
+    const w=e.target.closest('.nw'),g=e.target.closest('.dg');
+    if(!w||!nodes.some(n=>'n-'+n.id===w.id&&n.type==='process')){warn('ลากบล็อกทิศทางหรือตัวเลขไปวางบนกล่องสี่เหลี่ยมคำสั่ง');return}
+    fill(w.id.slice(2),d.chip,d.v,g?[...g.parentNode.children].indexOf(g):undefined);
+  }
+});
+document.addEventListener('dragend',()=>drag=null);
+function del(id){const i=nodes.findIndex(n=>n.id===id);nodes=nodes.filter(n=>n.id!==id);changed(Math.max(0,i))}
+function clr(){nodes=[{id:'a',type:'terminal',text:'เริ่มต้น'},{id:'b',type:'terminal',text:'จบ'}];run++;running=false;warn('');resetP();drawP();drawFC()}
+
+const DIRS={'ขวา':0,'ลง':1,'ซ้าย':2,'ขึ้น':3};
+function warn(m){const w=$('warn');w.textContent=m?'⚠️ '+m:'';w.classList.toggle('show',!!m)}
+function cmd(n){if(!n.dir)return null;if(n.dir==='ไขประตู')return{k:'unlock'};return{k:'move',d:DIRS[n.dir],n:(n.num===''||n.num==null)?1:parseInt(n.num)}}
+function stepTo(d){
+  const L=LV[cur];let x=P.x,y=P.y;
+  if(d===0)x++;else if(d===1)y++;else if(d===2)x--;else y--;
+  if(x<0||x>=L.cols||y<0||y>=L.rows)return 'เดินเกินขอบกระดาน';
+  if(L.obs.some(o=>o.x===x&&o.y===y))return 'ชนสิ่งกีดขวาง '+L.ob;
+  if(L.door&&x===L.door.x&&y===L.door.y&&!P.door)return 'ประตูยังล็อกอยู่ ต้องเก็บกุญแจและสั่ง "ไขประตู" ก่อน';
+  P.x=x;P.y=y;P.dir=d;return '';
+}
+function jumpBack(i){for(let k=i-1;k>=0;k--)if(nodes[k].type==='loop'||nodes[k].type==='connector')return k;return -1}
+function decide(n,i,st){
+  const L=LV[cur];
+  if(n.condition==='reachPrince'){
+    if((P.x!==L.goal.x||P.y!==L.goal.y)&&st.loops<12){
+      const j=jumpBack(i);
+      if(j>=0){st.loops++;return j}
+      st.nomark=true;
+    }
+    return i;
+  }
+  return (n.condition==='hasKey'&&P.key)?i:i+1;
+}
+function fastForward(to){
+  const L=LV[cur],st={loops:0};
+  for(let i=0;i<to&&i<nodes.length;i++){
+    const n=nodes[i];
+    if(n.type==='process'){
+      const c=cmd(n);if(!c)return false;
+      if(c.k==='move'){
+        for(let s=0;s<c.n;s++){
+          if(stepTo(c.d))return false;
+          if(L.key&&P.x===L.key.x&&P.y===L.key.y&&!P.key)P.key=true;
+        }
+      }else{if(!P.key)return false;P.door=true}
+    }else if(n.type==='decision')i=decide(n,i,st);
+  }
+  return true;
+}
+async function execute(manual,from=0){
+  const my=++run,L=LV[cur];
+  resetP();warn('');
+  from=Math.max(0,Math.min(from||0,nodes.length));
+  if(from>0&&!fastForward(from)){resetP();from=0}
+  running=true;drawP();status('กำลังรันคำสั่ง...','run');
+  const st={loops:0};let err=false,wait=false;
+  const fail=(el,m)=>{err=true;warn(m);status('ผิดทาง! ❌','bad');if(el){el.classList.remove('on');el.classList.add('bad')}};
+  try{
+    for(let i=from;i<nodes.length;i++){
+      const n=nodes[i],el=$('n-'+n.id);
+      if(el)el.classList.add('on');
+      await sleep(450);if(my!==run)return;
+      if(n.type==='process'){
+        const c=cmd(n),lab=n.dir+' '+(n.num||1);
+        if(!c){
+          if(manual)fail(el,'กล่องคำสั่งยังว่าง ลากบล็อก ซ้าย / ขวา / ขึ้น / ลง มาใส่ก่อน');
+          else{wait=true;if(el)el.classList.remove('on')}
+          break;
+        }
+        if(c.k==='move'){
+          for(let s=1;s<=c.n;s++){
+            const m=stepTo(c.d);
+            if(m){fail(el,'ผิดทาง! คำสั่ง "'+lab+'" ก้าวที่ '+s+': '+m);break}
+            drawP();await sleep(300);if(my!==run)return;
+            if(L.key&&P.x===L.key.x&&P.y===L.key.y&&!P.key){P.key=true;drawP()}
+          }
+          if(err)break;
+        }else{
+          if(!P.key){fail(el,'ยังไม่มีลูกกุญแจ เลยไขประตูไม่ได้ ต้องเดินไปเก็บ 🔑 ก่อน');break}
+          P.door=true;drawP();
+        }
+      }else if(n.type==='decision')i=decide(n,i,st);
+      if(el)el.classList.remove('on');
+    }
+    running=false;drawP();
+    if(err)return;
+    if(wait){status('รอเติมคำสั่งในกล่องว่าง','');return}
+    if(P.x===L.goal.x&&P.y===L.goal.y){
+      status('ภารกิจสำเร็จ! 🏆','');party();
+      if(manual||!$('live').checked)setTimeout(()=>show('ok'),500);
+    }else{
+      if(st.nomark)warn('ยังไม่มีเครื่องหมายวนซ้ำ 🔁 ให้วนกลับ ลากมาวางก่อนกล่องคำสั่งนะ');
+      status('ยังไม่ถึงจุดหมาย','bad');
+      if(manual)setTimeout(()=>show('no'),400);
+    }
+  }catch(e){console.error(e);status('เกิดข้อผิดพลาด','bad')}
+  finally{if(my===run){running=false;drawP();document.querySelectorAll('.nw.on').forEach(e=>e.classList.remove('on'))}}
+}
+function party(){
+  const E=['🎉','⭐','🎈','✨','🍬','🌟'];
+  for(let i=0;i<36;i++){
+    const e=document.createElement('div');e.className='cf';e.textContent=E[i%E.length];
+    e.style.left=Math.random()*100+'vw';e.style.animationDelay=Math.random()*.8+'s';
+    document.body.appendChild(e);setTimeout(()=>e.remove(),3300);
+  }
+}
+window.addEventListener('resize',()=>{buildBoard();drawP()});
+window.addEventListener('load',()=>sw(1));
+</script>
+</body>
+</html>
